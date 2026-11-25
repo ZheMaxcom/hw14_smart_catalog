@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Catalog } from "@/components/Catalog";
 import { products } from "@/data/products";
 
@@ -16,6 +17,12 @@ export default function Home() {
             Теніс, плавання та бокс — знайдіть потрібний товар за назвою або
             категорією.
           </p>
+          <Link
+            href="/about"
+            className="mt-1 w-fit text-sm font-semibold text-emerald-700 underline-offset-4 hover:underline"
+          >
+            Про магазин
+          </Link>
         </header>
         <Catalog products={products} />
       </main>

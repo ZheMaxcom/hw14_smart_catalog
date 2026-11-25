@@ -99,6 +99,10 @@ export function Catalog({ products }: CatalogProps) {
         </label>
       </div>
 
+      <p className="text-sm font-medium text-zinc-700">
+        Знайдено товарів: {visibleProducts.length}
+      </p>
+
       {visibleProducts.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-zinc-300 bg-white px-4 py-10 text-center text-zinc-600">
           Товарів не знайдено

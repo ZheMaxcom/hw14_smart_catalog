@@ -31,6 +31,15 @@ export function Catalog({ products }: CatalogProps) {
     return [ALL_CATEGORIES, ...unique];
   }, [products]);
 
+  const filtersChanged =
+    query !== "" || category !== ALL_CATEGORIES || sort !== SORT_NONE;
+
+  function resetFilters() {
+    setQuery("");
+    setCategory(ALL_CATEGORIES);
+    setSort(SORT_NONE);
+  }
+
   const visibleProducts = products
     .filter((product) => {
       const matchesName = product.name
@@ -53,7 +62,7 @@ export function Catalog({ products }: CatalogProps) {
 
   return (
     <section className="flex flex-col gap-6">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_220px_240px]">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_220px_240px_auto]">
         <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
           Пошук за назвою
           <input
@@ -78,7 +87,7 @@ export function Catalog({ products }: CatalogProps) {
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700 sm:col-span-2 lg:col-span-1">
+        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
           Сортування
           <select
             value={sort}
@@ -97,6 +106,16 @@ export function Catalog({ products }: CatalogProps) {
             ))}
           </select>
         </label>
+        <div className="flex items-end">
+          <button
+            type="button"
+            onClick={resetFilters}
+            disabled={!filtersChanged}
+            className="w-full rounded-xl border border-emerald-700 bg-emerald-700 px-4 py-2.5 text-base font-semibold text-white outline-none ring-emerald-600 transition hover:bg-emerald-800 focus:ring-2 disabled:cursor-not-allowed disabled:border-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:hover:bg-zinc-100 lg:w-auto"
+          >
+            Скинути фільтри
+          </button>
+        </div>
       </div>
 
       <p className="text-sm font-medium text-zinc-700">

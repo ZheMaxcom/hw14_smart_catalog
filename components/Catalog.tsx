@@ -5,32 +5,55 @@ import type { Product } from "@/types/product";
 import { ProductCard } from "@/components/ProductCard";
 
 const ALL_CATEGORIES = "Усі";
+const SORT_NONE = "Без сортування";
+const SORT_CHEAPEST = "Спочатку дешевші";
+const SORT_EXPENSIVE = "Спочатку дорожчі";
+
+const sortOptions = [SORT_NONE, SORT_CHEAPEST, SORT_EXPENSIVE] as const;
+
+type SortOption = (typeof sortOptions)[number];
 
 type CatalogProps = {
   products: Product[];
 };
 
+function isSortOption(value: string): value is SortOption {
+  return sortOptions.some((option) => option === value);
+}
+
 export function Catalog({ products }: CatalogProps) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState(ALL_CATEGORIES);
+  const [sort, setSort] = useState<SortOption>(SORT_NONE);
 
   const categories = useMemo(() => {
     const unique = Array.from(new Set(products.map((product) => product.category)));
     return [ALL_CATEGORIES, ...unique];
   }, [products]);
 
-  const visibleProducts = products.filter((product) => {
-    const matchesName = product.name
-      .toLowerCase()
-      .includes(query.trim().toLowerCase());
-    const matchesCategory =
-      category === ALL_CATEGORIES || product.category === category;
-    return matchesName && matchesCategory;
-  });
+  const visibleProducts = products
+    .filter((product) => {
+      const matchesName = product.name
+        .toLowerCase()
+        .includes(query.trim().toLowerCase());
+      const matchesCategory =
+        category === ALL_CATEGORIES || product.category === category;
+      return matchesName && matchesCategory;
+    })
+    .slice()
+    .sort((left, right) => {
+      if (sort === SORT_CHEAPEST) {
+        return left.price - right.price;
+      }
+      if (sort === SORT_EXPENSIVE) {
+        return right.price - left.price;
+      }
+      return 0;
+    });
 
   return (
     <section className="flex flex-col gap-6">
-      <div className="grid gap-3 sm:grid-cols-[1fr_220px]">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_220px_240px]">
         <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700">
           Пошук за назвою
           <input
@@ -51,6 +74,25 @@ export function Catalog({ products }: CatalogProps) {
             {categories.map((item) => (
               <option key={item} value={item}>
                 {item}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700 sm:col-span-2 lg:col-span-1">
+          Сортування
+          <select
+            value={sort}
+            onChange={(event) => {
+              const nextSort = event.target.value;
+              if (isSortOption(nextSort)) {
+                setSort(nextSort);
+              }
+            }}
+            className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-base font-normal text-zinc-900 outline-none ring-emerald-600 focus:ring-2"
+          >
+            {sortOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
               </option>
             ))}
           </select>
